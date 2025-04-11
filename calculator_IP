@@ -1,0 +1,53 @@
+# Função para converter IP para binário
+def ip_para_binario(ip):
+    partes = ip.split('.')
+    binario = ''
+    for parte in partes:
+        binario += format(int(parte), '08b')
+    return binario
+
+# Função para converter binário para IP
+def binario_para_ip(binario):
+    ip = ''
+    for i in range(0, 32, 8):
+        parte = binario[i:i+8]
+        ip += str(int(parte, 2)) + '.'
+    return ip[:-1]
+
+# Função para criar a máscara em binário
+def criar_mascara(mask_len):
+    return '1' * mask_len + '0' * (32 - mask_len)
+
+# Função principal
+ip = input("Digite o endereço IP (ex: 192.168.0.1): ")
+inicio = int(input("Digite a máscara inicial (ex: 24): "))
+fim = int(input("Digite a máscara final (ex: 30): "))
+
+ip_bin = ip_para_binario(ip)
+
+for m in range(inicio, fim + 1):
+    mascara_bin = criar_mascara(m)
+
+    # Endereço de rede = IP AND máscara
+    rede_bin = ''.join(['1' if ip_bin[i] == '1' and mascara_bin[i] == '1' else '0' for i in range(32)])
+    
+    # Broadcast = IP da rede OR inverso da máscara
+    inverso_mascara = ''.join(['1' if bit == '0' else '0' for bit in mascara_bin])
+    broadcast_bin = ''.join(['1' if rede_bin[i] == '1' or inverso_mascara[i] == '1' else '0' for i in range(32)])
+    
+    # Primeiro e último IPs utilizáveis
+    if m < 31:
+        primeiro_bin = bin(int(rede_bin, 2) + 1)[2:].zfill(32)
+        ultimo_bin = bin(int(broadcast_bin, 2) - 1)[2:].zfill(32)
+        primeiro_ip = binario_para_ip(primeiro_bin)
+        ultimo_ip = binario_para_ip(ultimo_bin)
+    else:
+        primeiro_ip = "N/A"
+        ultimo_ip = "N/A"
+
+    print(f"\nMáscara /{m}")
+    print(f"Endereço da rede: {binario_para_ip(rede_bin)}")
+    print(f"Broadcast: {binario_para_ip(broadcast_bin)}")
+    print(f"Primeiro IP utilizável: {primeiro_ip}")
+    print(f"Último IP utilizável: {ultimo_ip}")
+    print(f"Total de endereços: {2**(32 - m)}")
