@@ -1,9 +1,9 @@
 def ip_para_bin(ip):
-    # Converte IP para binário (ex: 192.168.1.1 → 11000000101010000000000100000001)
+    # Converte IP para binário
     return ''.join(f'{int(octeto):08b}' for octeto in ip.split('.'))
 
 def bin_para_ip(binario):
-    # Converte binário para IP normal (ex: 11000000... → 192.168.1.1)
+    # Converte binário para IP
     return '.'.join(str(int(binario[i:i+8], 2)) for i in range(0, 32, 8))
 
 def calcular_subrede(ip, prefixo):
